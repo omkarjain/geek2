@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Itinerary Generator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        #map { height: 400px; width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Itinerary Generator</h1>
+    <form method="POST">
+        <input type="text" name="origin" placeholder="Origin"><br>
+        <input type="text" name="destination" placeholder="Destination"><br>
+        <input type="number" name="days" placeholder="Days"><br>
+        <input type="number" name="budget" placeholder="Budget"><br>
+        <input type="text" name="cuisine_preference" placeholder="Cuisine Preference"><br>
+        <input type="number" name="people_number" placeholder="People Traveling"><br>
+        <input type="text" name="interests" placeholder="Interests"><br>
+        <button type="submit">Generate Itinerary</button>
+    </form>
+    {% if origin_lat and origin_lon and dest_lat and dest_lon %}
+        <div id="map"></div>
+        <script>
+            let map = L.map('map').setView([{{ (origin_lat + dest_lat) / 2 }}, {{ (origin_lon + dest_lon) / 2 }}], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            L.marker([{{ origin_lat }}, {{ origin_lon }}]).addTo(map).bindPopup("Origin");
+            L.marker([{{ dest_lat }}, {{ dest_lon }}]).addTo(map).bindPopup("Destination");
+            let polylinePoints = [[{{origin_lat}}, {{origin_lon}}], [{{dest_lat}}, {{dest_lon}}]];
+            let polylineOptions = {color: 'red'};
+            L.polyline(polylinePoints, polylineOptions).addTo(map);
+        </script>
+    {% endif %}
+    {% if itinerary %}
+        <h2>Itinerary:</h2>
+        <div style="white-space: pre-line;">{{ itinerary }}</div>
+    {% endif %}
+</body>
+</html>
